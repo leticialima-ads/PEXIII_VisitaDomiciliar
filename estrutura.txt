@@ -1,0 +1,31 @@
+lib/
+├── main.dart
+├── models/
+│   ├── paciente.dart
+│   ├── visita_domiciliar.dart
+│   └── metodo_contraceptivo.dart
+├── providers/
+│   └── paciente_provider.dart
+├── repositories/
+│   └── paciente_repository.dart (opcional)
+├── database/
+│   └── database_helper.dart
+├── services/
+│   └── estratificacao_service.dart
+├── utils/
+│   ├── constants.dart
+│   └── date_utils.dart
+├── widgets/
+│   ├── custom_button.dart
+│   ├── filtro_chip.dart
+│   └── paciente_card.dart
+└── screens/
+    ├── home_screen.dart
+    ├── cadastro_screen.dart
+    ├── editar_paciente_screen.dart
+    ├── filtros_screen.dart
+    ├── listagem_screen.dart
+    ├── pa_screen.dart
+    ├── paciente_detail_screen.dart
+    ├── relatorio_screen.dart
+    └── visita_screen.dart

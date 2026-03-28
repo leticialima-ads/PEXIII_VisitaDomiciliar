@@ -1,0 +1,36 @@
+name: sistema_acs
+description: Sistema de Estratificação Territorial para Busca Ativa em Saúde Pública
+version: 1.0.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Banco de dados SQLite
+  sqflite: ^2.3.0
+  path_provider: ^2.1.0
+  path: ^1.9.0
+  
+  # Gerenciamento de estado
+  provider: ^6.1.0
+  
+  # Formatação de datas
+  intl: ^0.18.0
+  
+  # Ícones
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  # Assets (se tiver imagens)
+  # assets:
+  #   - assets/images/
