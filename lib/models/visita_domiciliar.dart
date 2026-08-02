@@ -1,3 +1,4 @@
+```dart
 import 'metodo_contraceptivo.dart';
 
 class VisitaDomiciliar {
@@ -38,15 +39,19 @@ class VisitaDomiciliar {
     this.dataConsultaHipertensao,
     this.preventivoEmDia = true,
     this.dataUltimoPreventivo,
-    this.metodoContraceptivo = MetodoContraceptivo.nenhum,
+    this.metodoContraceptivo =
+        MetodoContraceptivo.nenhum,
     this.cadernetaEmDia = true,
     this.interesseVasectomia = false,
   });
 
-  // Métodos de atraso
+  // ==================== MÉTODOS DE ATRASO ====================
 
   bool isConsultaDiabetesAtrasada() {
-    if (!diabetes || dataConsultaDiabetes == null) return false;
+    if (!diabetes ||
+        dataConsultaDiabetes == null) {
+      return false;
+    }
 
     final diff = DateTime.now().difference(
       dataConsultaDiabetes!,
@@ -56,7 +61,8 @@ class VisitaDomiciliar {
   }
 
   bool isConsultaHipertensaoAtrasada() {
-    if (!hipertensao || dataConsultaHipertensao == null) {
+    if (!hipertensao ||
+        dataConsultaHipertensao == null) {
       return false;
     }
 
@@ -70,7 +76,9 @@ class VisitaDomiciliar {
   bool isPreventivoAtrasado() {
     if (preventivoEmDia) return false;
 
-    if (dataUltimoPreventivo == null) return true;
+    if (dataUltimoPreventivo == null) {
+      return true;
+    }
 
     final diff = DateTime.now().difference(
       dataUltimoPreventivo!,
@@ -84,9 +92,12 @@ class VisitaDomiciliar {
   }
 
   bool isPrioritario() {
-    return (diabetes && isConsultaDiabetesAtrasada()) ||
-        (hipertensao && isConsultaHipertensaoAtrasada()) ||
-        (!preventivoEmDia && isPreventivoAtrasado()) ||
+    return (diabetes &&
+            isConsultaDiabetesAtrasada()) ||
+        (hipertensao &&
+            isConsultaHipertensaoAtrasada()) ||
+        (!preventivoEmDia &&
+            isPreventivoAtrasado()) ||
         (!cadernetaEmDia) ||
         interesseVasectomia;
   }
@@ -94,30 +105,43 @@ class VisitaDomiciliar {
   String getPrioridadeDescricao() {
     List<String> motivos = [];
 
-    if (diabetes && isConsultaDiabetesAtrasada()) {
-      motivos.add('Diabético sem consulta');
+    if (diabetes &&
+        isConsultaDiabetesAtrasada()) {
+      motivos.add(
+        'Diabético sem consulta',
+      );
     }
 
-    if (hipertensao && isConsultaHipertensaoAtrasada()) {
-      motivos.add('Hipertenso sem consulta');
+    if (hipertensao &&
+        isConsultaHipertensaoAtrasada()) {
+      motivos.add(
+        'Hipertenso sem consulta',
+      );
     }
 
-    if (!preventivoEmDia && isPreventivoAtrasado()) {
-      motivos.add('Preventivo atrasado');
+    if (!preventivoEmDia &&
+        isPreventivoAtrasado()) {
+      motivos.add(
+        'Preventivo atrasado',
+      );
     }
 
     if (!cadernetaEmDia) {
-      motivos.add('Caderneta atrasada');
+      motivos.add(
+        'Caderneta atrasada',
+      );
     }
 
     if (interesseVasectomia) {
-      motivos.add('Interesse em vasectomia');
+      motivos.add(
+        'Interesse em vasectomia',
+      );
     }
 
     return motivos.join(', ');
   }
 
-  // Conversão para banco de dados
+  // ==================== CONVERSÃO PARA BANCO ====================
 
   Map<String, dynamic> toMap() {
     return {
@@ -129,5 +153,94 @@ class VisitaDomiciliar {
       'acamado': acamado ? 1 : 0,
       'diabetes': diabetes ? 1 : 0,
       'data_consulta_diabetes':
-          dataConsultaDiabetes?.toIso8601String(),
-      'hipertensao': hipertensao
+          dataConsultaDiabetes
+              ?.toIso8601String(),
+      'hipertensao':
+          hipertensao ? 1 : 0,
+      'data_consulta_hipertensao':
+          dataConsultaHipertensao
+              ?.toIso8601String(),
+      'preventivo_em_dia':
+          preventivoEmDia ? 1 : 0,
+      'data_ultimo_preventivo':
+          dataUltimoPreventivo
+              ?.toIso8601String(),
+      'metodo_contraceptivo':
+          metodoContraceptivo?.name,
+      'caderneta_em_dia':
+          cadernetaEmDia ? 1 : 0,
+      'interesse_vasectomia':
+          interesseVasectomia ? 1 : 0,
+    };
+  }
+
+  // ==================== CONVERSÃO DO BANCO ====================
+
+  factory VisitaDomiciliar.fromMap(
+    Map<String, dynamic> map,
+  ) {
+    return VisitaDomiciliar(
+      id: map['id'],
+      pacienteId: map['paciente_id'],
+      data: DateTime.parse(
+        map['data'],
+      ),
+      motivo: map['motivo'] ?? '',
+      observacoes:
+          map['observacoes'] ?? '',
+      acamado: map['acamado'] == 1,
+      diabetes:
+          map['diabetes'] == 1,
+      dataConsultaDiabetes:
+          map['data_consulta_diabetes'] !=
+                  null
+              ? DateTime.parse(
+                  map[
+                      'data_consulta_diabetes'],
+                )
+              : null,
+      hipertensao:
+          map['hipertensao'] == 1,
+      dataConsultaHipertensao:
+          map['data_consulta_hipertensao'] !=
+                  null
+              ? DateTime.parse(
+                  map[
+                      'data_consulta_hipertensao'],
+                )
+              : null,
+      preventivoEmDia:
+          map['preventivo_em_dia'] == 1,
+      dataUltimoPreventivo:
+          map['data_ultimo_preventivo'] !=
+                  null
+              ? DateTime.parse(
+                  map[
+                      'data_ultimo_preventivo'],
+                )
+              : null,
+      metodoContraceptivo:
+          map['metodo_contraceptivo'] !=
+                  null
+              ? MetodoContraceptivo
+                  .values
+                  .firstWhere(
+                    (e) =>
+                        e.name ==
+                        map[
+                            'metodo_contraceptivo'],
+                    orElse: () =>
+                        MetodoContraceptivo
+                            .nenhum,
+                  )
+              : MetodoContraceptivo
+                  .nenhum,
+      cadernetaEmDia:
+          map['caderneta_em_dia'] == 1,
+      interesseVasectomia:
+          map['interesse_vasectomia'] ==
+              1,
+    );
+  }
+}
+```
