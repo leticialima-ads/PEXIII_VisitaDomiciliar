@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/paciente.dart';
 import '../providers/paciente_provider.dart';
 
@@ -12,6 +13,7 @@ class CadastroScreen extends StatefulWidget {
 
 class _CadastroScreenState extends State<CadastroScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final _nomeController = TextEditingController();
   final _cpfController = TextEditingController();
   final _microareaController = TextEditingController();
@@ -30,98 +32,171 @@ class _CadastroScreenState extends State<CadastroScreen> {
         backgroundColor: Colors.green,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
           : Form(
               key: _formKey,
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  _buildSectionTitle('Dados Pessoais'),
+                  _buildSectionTitle(
+                    'Dados Pessoais',
+                  ),
+
                   const SizedBox(height: 8),
+
                   TextFormField(
                     controller: _nomeController,
                     decoration: const InputDecoration(
                       labelText: 'Nome completo',
                       border: OutlineInputBorder(),
                     ),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obrigatório' : null,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+
+                      return null;
+                    },
                   ),
+
                   const SizedBox(height: 12),
+
                   InkWell(
                     onTap: () => _selectDate(context),
                     child: InputDecorator(
                       decoration: const InputDecoration(
-                        labelText: 'Data de Nascimento',
-                        border: OutlineInputBorder(),
+                        labelText:
+                            'Data de Nascimento',
+                        border:
+                            OutlineInputBorder(),
                       ),
                       child: Text(
                         _dataNascimento != null
-                            ? _formatDate(_dataNascimento!)
+                            ? _formatDate(
+                                _dataNascimento!,
+                              )
                             : 'Selecione a data',
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 12),
+
                   DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
+                    decoration:
+                        const InputDecoration(
                       labelText: 'Sexo',
-                      border: OutlineInputBorder(),
+                      border:
+                          OutlineInputBorder(),
                     ),
                     value: _sexo,
                     items: const [
                       DropdownMenuItem(
                         value: 'MASCULINO',
-                        child: Text('Masculino'),
+                        child: Text(
+                          'Masculino',
+                        ),
                       ),
                       DropdownMenuItem(
                         value: 'FEMININO',
-                        child: Text('Feminino'),
+                        child: Text(
+                          'Feminino',
+                        ),
                       ),
                     ],
-                    onChanged: (value) => setState(() => _sexo = value),
-                    validator: (value) =>
-                        value == null ? 'Campo obrigatório' : null,
+                    onChanged: (value) {
+                      setState(
+                        () => _sexo = value,
+                      );
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Campo obrigatório';
+                      }
+
+                      return null;
+                    },
                   ),
+
                   const SizedBox(height: 12),
+
                   TextFormField(
                     controller: _cpfController,
-                    decoration: const InputDecoration(
+                    decoration:
+                        const InputDecoration(
                       labelText: 'CPF',
-                      border: OutlineInputBorder(),
-                      hintText: 'Digite apenas números',
+                      border:
+                          OutlineInputBorder(),
+                      hintText:
+                          'Digite apenas números',
                     ),
                   ),
+
                   const SizedBox(height: 12),
+
                   TextFormField(
-                    controller: _microareaController,
-                    decoration: const InputDecoration(
-                      labelText: 'Microárea (ex: A1, B3)',
-                      border: OutlineInputBorder(),
+                    controller:
+                        _microareaController,
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Microárea (ex: A1, B3)',
+                      border:
+                          OutlineInputBorder(),
                     ),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obrigatório' : null,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+
+                      return null;
+                    },
                   ),
+
                   const SizedBox(height: 12),
+
                   TextFormField(
-                    controller: _enderecoController,
-                    decoration: const InputDecoration(
+                    controller:
+                        _enderecoController,
+                    decoration:
+                        const InputDecoration(
                       labelText: 'Endereço',
-                      border: OutlineInputBorder(),
+                      border:
+                          OutlineInputBorder(),
                     ),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obrigatório' : null,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+
+                      return null;
+                    },
                   ),
+
                   const SizedBox(height: 32),
+
                   ElevatedButton(
                     onPressed: _savePaciente,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    style:
+                        ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Colors.green,
+                      padding:
+                          const EdgeInsets.symmetric(
+                        vertical: 16,
+                      ),
                     ),
                     child: const Text(
                       'Salvar Paciente',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -130,9 +205,14 @@ class _CadastroScreenState extends State<CadastroScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(
+    String title,
+  ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 8,
+      ),
       child: Text(
         title,
         style: const TextStyle(
@@ -144,51 +224,91 @@ class _CadastroScreenState extends State<CadastroScreen> {
     );
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(
+    BuildContext context,
+  ) async {
     final date = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
+
     if (date != null) {
-      setState(() {
-        _dataNascimento = date;
-      });
+      setState(
+        () => _dataNascimento = date,
+      );
     }
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(
+    DateTime date,
+  ) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   Future<void> _savePaciente() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_dataNascimento == null || _sexo == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha data de nascimento e sexo')),
-      );
+    if (!_formKey.currentState!
+        .validate()) {
       return;
     }
 
-    setState(() => _isLoading = true);
+    if (_dataNascimento == null ||
+        _sexo == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Preencha data de nascimento e sexo',
+          ),
+        ),
+      );
 
-    final paciente = Paciente(
-      nome: _nomeController.text,
-      dataNascimento: _dataNascimento!,
-      sexo: _sexo!,
-      cpf: _cpfController.text.isEmpty ? 'NAO POSSUI' : _cpfController.text,
-      microarea: _microareaController.text,
-      endereco: _enderecoController.text,
+      return;
+    }
+
+    setState(
+      () => _isLoading = true,
     );
 
-    final provider = Provider.of<PacienteProvider>(context, listen: false);
-    await provider.cadastrarPaciente(paciente);
+    final paciente = Paciente(
+      nome: _nomeController.text.trim(),
+      dataNascimento: _dataNascimento!,
+      sexo: _sexo!,
+      cpf: _cpfController.text
+              .trim()
+              .isEmpty
+          ? 'NAO POSSUI'
+          : _cpfController.text.trim(),
+      microarea:
+          _microareaController.text.trim(),
+      endereco:
+          _enderecoController.text.trim(),
+    );
 
-    setState(() => _isLoading = false);
+    final provider =
+        Provider.of<PacienteProvider>(
+      context,
+      listen: false,
+    );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Paciente cadastrado com sucesso!')),
+    await provider.cadastrarPaciente(
+      paciente,
+    );
+
+    if (!mounted) return;
+
+    setState(
+      () => _isLoading = false,
+    );
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Paciente cadastrado com sucesso!',
+        ),
+      ),
     );
 
     Navigator.pop(context);
@@ -200,6 +320,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
     _cpfController.dispose();
     _microareaController.dispose();
     _enderecoController.dispose();
+
     super.dispose();
   }
 }
