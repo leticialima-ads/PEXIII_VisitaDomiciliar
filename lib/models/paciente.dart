@@ -24,34 +24,47 @@ class Paciente {
   // Calcula idade baseado na data de nascimento
   int getIdade() {
     final hoje = DateTime.now();
+
     int idade = hoje.year - dataNascimento.year;
+
     if (hoje.month < dataNascimento.month ||
-        (hoje.month == dataNascimento.month && hoje.day < dataNascimento.day)) {
+        (hoje.month == dataNascimento.month &&
+            hoje.day < dataNascimento.day)) {
       idade--;
     }
+
     return idade;
   }
 
   // Verificações demográficas
+
   bool isMenorDeSeis() => getIdade() < 6;
 
   bool isMulherIdadeFertil() {
-    return sexo == 'FEMININO' && getIdade() >= 25 && getIdade() <= 64;
+    return sexo == 'FEMININO' &&
+        getIdade() >= 25 &&
+        getIdade() <= 64;
   }
 
   bool isHomem() => sexo == 'MASCULINO';
 
   bool isHomemIdadeVasectomia() {
-    return isHomem() && getIdade() >= 25 && getIdade() <= 64;
+    return isHomem() &&
+        getIdade() >= 25 &&
+        getIdade() <= 64;
   }
 
-  // Pega a última visita do paciente
+  // Pega a visita mais recente pela data
   VisitaDomiciliar? getUltimaVisita() {
     if (visitas.isEmpty) return null;
-    return visitas.last;
+
+    return visitas.reduce(
+      (a, b) => a.data.isAfter(b.data) ? a : b,
+    );
   }
 
   // Métodos baseados na última visita
+
   bool isDiabetes() {
     final ultima = getUltimaVisita();
     return ultima != null && ultima.diabetes;
@@ -64,34 +77,51 @@ class Paciente {
 
   bool isConsultaDiabetesAtrasada() {
     final ultima = getUltimaVisita();
-    if (ultima == null || !ultima.diabetes) return false;
+
+    if (ultima == null || !ultima.diabetes) {
+      return false;
+    }
+
     return ultima.isConsultaDiabetesAtrasada();
   }
 
   bool isConsultaHipertensaoAtrasada() {
     final ultima = getUltimaVisita();
-    if (ultima == null || !ultima.hipertensao) return false;
+
+    if (ultima == null || !ultima.hipertensao) {
+      return false;
+    }
+
     return ultima.isConsultaHipertensaoAtrasada();
   }
 
   bool isCadernetaAtrasada() {
     if (!isMenorDeSeis()) return false;
+
     final ultima = getUltimaVisita();
+
     if (ultima == null) return false;
+
     return ultima.isCadernetaAtrasada();
   }
 
   bool isPreventivoAtrasado() {
     if (!isMulherIdadeFertil()) return false;
+
     final ultima = getUltimaVisita();
+
     if (ultima == null) return false;
+
     return ultima.isPreventivoAtrasado();
   }
 
   bool isInteresseVasectomia() {
     if (!isHomemIdadeVasectomia()) return false;
+
     final ultima = getUltimaVisita();
-    return ultima != null && ultima.interesseVasectomia;
+
+    return ultima != null &&
+        ultima.interesseVasectomia;
   }
 
   bool isAcamado() {
@@ -100,32 +130,58 @@ class Paciente {
   }
 
   // Priorização
+
   bool isPrioritario() {
-    return (isDiabetes() && isConsultaDiabetesAtrasada()) ||
-        (isHipertensao() && isConsultaHipertensaoAtrasada()) ||
-        (isMenorDeSeis() && isCadernetaAtrasada()) ||
-        (isMulherIdadeFertil() && isPreventivoAtrasado()) ||
-        (isHomemIdadeVasectomia() && isInteresseVasectomia()) ||
+    return (isDiabetes() &&
+            isConsultaDiabetesAtrasada()) ||
+        (isHipertensao() &&
+            isConsultaHipertensaoAtrasada()) ||
+        (isMenorDeSeis() &&
+            isCadernetaAtrasada()) ||
+        (isMulherIdadeFertil() &&
+            isPreventivoAtrasado()) ||
+        (isHomemIdadeVasectomia() &&
+            isInteresseVasectomia()) ||
         isAcamado();
   }
 
   String getPrioridadeDescricao() {
     List<String> motivos = [];
-    if (isDiabetes() && isConsultaDiabetesAtrasada())
-      motivos.add('Diabetico sem consulta');
-    if (isHipertensao() && isConsultaHipertensaoAtrasada())
+
+    if (isDiabetes() &&
+        isConsultaDiabetesAtrasada()) {
+      motivos.add('Diabético sem consulta');
+    }
+
+    if (isHipertensao() &&
+        isConsultaHipertensaoAtrasada()) {
       motivos.add('Hipertenso sem consulta');
-    if (isMenorDeSeis() && isCadernetaAtrasada())
-      motivos.add('Crianca caderneta atrasada');
-    if (isMulherIdadeFertil() && isPreventivoAtrasado())
-      motivos.add('Mulher preventivo atrasado');
-    if (isHomemIdadeVasectomia() && isInteresseVasectomia())
-      motivos.add('Interesse vasectomia');
-    if (isAcamado()) motivos.add('Acamado');
+    }
+
+    if (isMenorDeSeis() &&
+        isCadernetaAtrasada()) {
+      motivos.add('Criança com caderneta atrasada');
+    }
+
+    if (isMulherIdadeFertil() &&
+        isPreventivoAtrasado()) {
+      motivos.add('Preventivo atrasado');
+    }
+
+    if (isHomemIdadeVasectomia() &&
+        isInteresseVasectomia()) {
+      motivos.add('Interesse em vasectomia');
+    }
+
+    if (isAcamado()) {
+      motivos.add('Acamado');
+    }
+
     return motivos.join(', ');
   }
 
   // Conversão para banco de dados
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -142,7 +198,9 @@ class Paciente {
     return Paciente(
       id: map['id'],
       nome: map['nome'],
-      dataNascimento: DateTime.parse(map['data_nascimento']),
+      dataNascimento: DateTime.parse(
+        map['data_nascimento'],
+      ),
       sexo: map['sexo'],
       cpf: map['cpf'],
       microarea: map['microarea'],
