@@ -271,19 +271,30 @@ class PacienteCardResumo extends StatelessWidget {
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: paciente.isPrioritario() ? Colors.red : Colors.green,
+        backgroundColor: paciente.isPrioritario()
+            ? Colors.red
+            : Colors.green,
         child: Text(
-          paciente.nome[0].toUpperCase(),
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      title: Text(paciente.nome),
-      subtitle: Text('${idade} anos | ${paciente.microarea}'),
-      trailing: paciente.isPrioritario()
-          ? const Icon(Icons.warning, color: Colors.red)
-          : null,
-      onTap: onTap,
-    );
+          paciente.nome.isNotEmpty
+              ? paciente.nome[0].toUpperCase()
+              : '?',
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+    ),
+  ),
+  title: Text(paciente.nome),
+  subtitle: Text(
+    '$idade anos | ${paciente.microarea}',
+  ),
+  trailing: paciente.isPrioritario()
+      ? const Icon(
+          Icons.warning,
+          color: Colors.red,
+        )
+      : null,
+  onTap: onTap,
+);
   }
 }
 
