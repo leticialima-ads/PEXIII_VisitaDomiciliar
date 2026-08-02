@@ -1,63 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../models/paciente.dart';
 import '../providers/paciente_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() =>
+      _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState
+    extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PacienteProvider>(context, listen: false).carregarPacientes();
+
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+      Provider.of<PacienteProvider>(
+        context,
+        listen: false,
+      ).carregarPacientes();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sistema ACS'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(
+          'Sistema ACS',
+        ),
+        centerTitle: true,
+      ),
+
       drawer: _buildDrawer(),
+
       body: Consumer<PacienteProvider>(
-        builder: (context, provider, child) {
-          final pacientes = provider.pacientes;
-          final prioritarios = provider.getPrioritarios();
+        builder: (
+          context,
+          provider,
+          child,
+        ) {
+          final pacientes =
+              provider.pacientes;
+
+          final prioritarios =
+              provider.getPrioritarios();
 
           return RefreshIndicator(
-            onRefresh: () => provider.carregarPacientes(),
+            onRefresh: () =>
+                provider
+                    .carregarPacientes(),
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding:
+                  const EdgeInsets.all(
+                16,
+              ),
               children: [
                 Row(
                   children: [
                     Expanded(
-                      child: _buildStatCard(
+                      child:
+                          _buildStatCard(
                         'Total',
-                        pacientes.length.toString(),
+                        pacientes.length
+                            .toString(),
                         Colors.blue,
                         Icons.people,
                       ),
                     ),
-                    const SizedBox(width: 12),
+
+                    const SizedBox(
+                      width: 12,
+                    ),
+
                     Expanded(
-                      child: _buildStatCard(
+                      child:
+                          _buildStatCard(
                         'Prioritários',
-                        prioritarios.length.toString(),
+                        prioritarios
+                            .length
+                            .toString(),
                         Colors.red,
                         Icons.warning,
                       ),
                     ),
-                    const SizedBox(width: 12),
+
+                    const SizedBox(
+                      width: 12,
+                    ),
+
                     Expanded(
-                      child: _buildStatCard(
+                      child:
+                          _buildStatCard(
                         'Microáreas',
                         pacientes
-                            .map((p) => p.microarea)
+                            .map(
+                              (p) => p
+                                  .microarea,
+                            )
                             .toSet()
                             .length
                             .toString(),
@@ -67,43 +112,82 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+
+                const SizedBox(
+                  height: 24,
+                ),
+
                 const Text(
                   'PRIORITÁRIOS',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight.bold,
                     color: Colors.red,
                   ),
                 ),
-                const SizedBox(height: 8),
+
+                const SizedBox(
+                  height: 8,
+                ),
+
                 if (prioritarios.isEmpty)
                   const Center(
                     child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Text('Nenhum paciente prioritário no momento'),
+                      padding:
+                          EdgeInsets.all(
+                        32,
+                      ),
+                      child: Text(
+                        'Nenhum paciente prioritário no momento',
+                      ),
                     ),
                   )
                 else
-                  ...prioritarios.take(5).map((p) => _buildPacienteCard(p)),
-                if (prioritarios.length > 5)
+                  ...prioritarios
+                      .take(5)
+                      .map(
+                        (p) =>
+                            _buildPacienteCard(
+                          p,
+                        ),
+                      ),
+
+                if (prioritarios
+                        .length >
+                    5)
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/filtros');
+                      Navigator
+                          .pushNamed(
+                        context,
+                        '/filtros',
+                      );
                     },
-                    child: Text('Ver todos (${prioritarios.length})'),
+                    child: Text(
+                      'Ver todos (${prioritarios.length})',
+                    ),
                   ),
               ],
             ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+
+      floatingActionButton:
+          FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/cadastro');
+          Navigator.pushNamed(
+            context,
+            '/cadastro',
+          );
         },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor:
+            Colors.green,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -114,64 +198,135 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         children: [
           const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.green),
+            decoration:
+                BoxDecoration(
+              color: Colors.green,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .start,
+              mainAxisAlignment:
+                  MainAxisAlignment
+                      .end,
               children: [
                 Text(
                   'Sistema ACS',
                   style: TextStyle(
-                    color: Colors.white,
+                    color:
+                        Colors.white,
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight
+                            .bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                SizedBox(
+                  height: 8,
+                ),
                 Text(
                   'Busca Ativa em Saúde Pública',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color:
+                        Colors.white,
+                  ),
                 ),
               ],
             ),
           ),
+
           ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Início'),
+            leading:
+                const Icon(
+              Icons.home,
+            ),
+            title: const Text(
+              'Início',
+            ),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(
+                context,
+              );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.person_add),
-            title: const Text('Cadastrar Paciente'),
+            leading:
+                const Icon(
+              Icons.person_add,
+            ),
+            title: const Text(
+              'Cadastrar Paciente',
+            ),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/cadastro');
+              Navigator.pop(
+                context,
+              );
+
+              Navigator.pushNamed(
+                context,
+                '/cadastro',
+              );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.home_work),
-            title: const Text('Registrar Visita'),
+            leading:
+                const Icon(
+              Icons.home_work,
+            ),
+            title: const Text(
+              'Registrar Visita',
+            ),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/visita');
+              Navigator.pop(
+                context,
+              );
+
+              Navigator.pushNamed(
+                context,
+                '/visita',
+              );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.filter_alt),
-            title: const Text('Filtros'),
+            leading:
+                const Icon(
+              Icons.filter_alt,
+            ),
+            title: const Text(
+              'Filtros',
+            ),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/filtros');
+              Navigator.pop(
+                context,
+              );
+
+              Navigator.pushNamed(
+                context,
+                '/filtros',
+              );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.bar_chart),
-            title: const Text('Relatórios'),
+            leading:
+                const Icon(
+              Icons.bar_chart,
+            ),
+            title: const Text(
+              'Relatórios',
+            ),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/relatorios');
+              Navigator.pop(
+                context,
+              );
+
+              Navigator.pushNamed(
+                context,
+                '/relatorios',
+              );
             },
           ),
         ],
@@ -186,48 +341,103 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData icon,
   ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding:
+          const EdgeInsets.all(
+        12,
+      ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(
+          0.1,
+        ),
+        borderRadius:
+            BorderRadius.circular(
+          12,
+        ),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 8),
+          Icon(
+            icon,
+            color: color,
+            size: 28,
+          ),
+
+          const SizedBox(
+            height: 8,
+          ),
+
           Text(
             value,
             style: TextStyle(
               fontSize: 24,
-              fontWeight: FontWeight.bold,
+              fontWeight:
+                  FontWeight.bold,
               color: color,
             ),
           ),
-          Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color:
+                  Colors.grey[600],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPacienteCard(p) {
+  Widget _buildPacienteCard(
+    Paciente p,
+  ) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin:
+          const EdgeInsets.only(
+        bottom: 8,
+      ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.red,
+          backgroundColor:
+              Colors.red,
           child: Text(
-            p.nome[0].toUpperCase(),
-            style: const TextStyle(color: Colors.white),
+            p.nome.isNotEmpty
+                ? p.nome[0]
+                    .toUpperCase()
+                : '?',
+            style:
+                const TextStyle(
+              color:
+                  Colors.white,
+            ),
           ),
         ),
+
         title: Text(
           p.nome,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(
+            fontWeight:
+                FontWeight.bold,
+          ),
         ),
-        subtitle: Text('${p.getIdade()} anos | ${p.microarea}'),
-        trailing: const Icon(Icons.warning, color: Colors.red),
+
+        subtitle: Text(
+          '${p.getIdade()} anos | ${p.microarea}',
+        ),
+
+        trailing: const Icon(
+          Icons.warning,
+          color: Colors.red,
+        ),
+
         onTap: () {
-          Navigator.pushNamed(context, '/paciente', arguments: p.id);
+          Navigator.pushNamed(
+            context,
+            '/paciente',
+            arguments: p.id,
+          );
         },
       ),
     );
