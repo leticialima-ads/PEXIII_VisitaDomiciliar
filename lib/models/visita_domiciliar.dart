@@ -1,4 +1,3 @@
-```dart
 import 'metodo_contraceptivo.dart';
 
 class VisitaDomiciliar {
