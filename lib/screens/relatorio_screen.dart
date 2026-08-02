@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/paciente_provider.dart';
+import '../models/paciente.dart';
 
 class RelatorioScreen extends StatelessWidget {
   const RelatorioScreen({super.key});
@@ -82,11 +83,11 @@ class RelatorioScreen extends StatelessWidget {
   }
 
   Widget _buildCard(
-    String title,
-    int count,
-    Color color,
-    IconData icon,
-    List pacientes,
+  String title,
+  int count,
+  Color color,
+  IconData icon,
+  List<Paciente> pacientes,
   ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -113,7 +114,7 @@ class RelatorioScreen extends StatelessWidget {
               ]
             : pacientes
                   .map<Widget>(
-                    (p) => ListTile(
+                    (Paciente p) => ListTile(
                       title: Text(p.nome),
                       subtitle: Text(
                         '${p.getIdade()} anos | ${p.microarea} | ${p.cpf}',
