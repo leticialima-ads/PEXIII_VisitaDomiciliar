@@ -276,38 +276,63 @@ class _VisitaScreenState extends State<VisitaScreen> {
   }
 
   void _salvar() async {
-    if (_pacienteSelecionado == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Selecione um paciente')));
-      return;
-    }
-
-    final visita = VisitaDomiciliar(
-      pacienteId: _pacienteSelecionado!.id!,
-      data: _data,
-      motivo: _motivoController.text,
-      observacoes: _observacoesController.text,
-      acamado: _acamado,
-      diabetes: _diabetes,
-      dataConsultaDiabetes: _dataConsultaDiabetes,
-      hipertensao: _hipertensao,
-      dataConsultaHipertensao: _dataConsultaHipertensao,
-      preventivoEmDia: _preventivoEmDia,
-      dataUltimoPreventivo: _dataUltimoPreventivo,
-      metodoContraceptivo: _metodoContraceptivo,
-      cadernetaEmDia: _cadernetaEmDia,
-      interesseVasectomia: _interesseVasectomia,
+  if (_pacienteSelecionado == null) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(
+      const SnackBar(
+        content: Text('Selecione um paciente'),
+      ),
     );
+    return;
+  }
 
-    final provider = Provider.of<PacienteProvider>(context, listen: false);
-    await provider.registrarVisita(visita);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Visita registrada com sucesso!')),
+  if (_motivoController.text.trim().isEmpty) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(
+      const SnackBar(
+        content: Text('Informe o motivo da visita'),
+      ),
     );
+    return;
+  }
 
-    Navigator.pop(context);
+  final visita = VisitaDomiciliar(
+    pacienteId: _pacienteSelecionado!.id!,
+    data: _data,
+    motivo: _motivoController.text.trim(),
+    observacoes: _observacoesController.text.trim(),
+    acamado: _acamado,
+    diabetes: _diabetes,
+    dataConsultaDiabetes: _dataConsultaDiabetes,
+    hipertensao: _hipertensao,
+    dataConsultaHipertensao: _dataConsultaHipertensao,
+    preventivoEmDia: _preventivoEmDia,
+    dataUltimoPreventivo: _dataUltimoPreventivo,
+    metodoContraceptivo: _metodoContraceptivo,
+    cadernetaEmDia: _cadernetaEmDia,
+    interesseVasectomia: _interesseVasectomia,
+  );
+
+  final provider = Provider.of<PacienteProvider>(
+    context,
+    listen: false,
+  );
+
+  await provider.registrarVisita(visita);
+
+  if (!mounted) return;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        'Visita registrada com sucesso!',
+      ),
+    ),
+  );
+
+  Navigator.pop(context);
   }
 
   @override
