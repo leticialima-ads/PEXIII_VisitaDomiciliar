@@ -1,44 +1,74 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+
 import '../models/paciente.dart';
 import '../models/visita_domiciliar.dart';
 import '../models/metodo_contraceptivo.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
+
   factory DatabaseHelper() => _instance;
+
   DatabaseHelper._internal();
 
   static Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
+
     _database = await _initDatabase();
+
     return _database!;
   }
 
   Future<Database> _initDatabase() async {
     final directory = await getApplicationDocumentsDirectory();
-    final path = join(directory.path, 'saude_acs.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+
+    final path = join(
+      directory.path,
+      'saude_acs.db',
+    );
+
+    return openDatabase(
+      path,
+      version: 1,
+
+      onConfigure: (db) async {
+        await db.execute(
+          'PRAGMA foreign_keys = ON',
+        );
+      },
+
+      onCreate: _onCreate,
+
+      onUpgrade: (db, oldVersion, newVersion) async {
+        // Futuras alterações do banco
+      },
+    );
   }
 
-  Future<void> _onCreate(Database db, int version) async {
-    // Tabela pacientes
+  Future<void> _onCreate(
+    Database db,
+    int version,
+  ) async {
+    // ==================== PACIENTES ====================
+
     await db.execute('''
       CREATE TABLE pacientes(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         data_nascimento TEXT NOT NULL,
         sexo TEXT NOT NULL,
-        cpf TEXT NOT NULL,
+        cpf TEXT NOT NULL UNIQUE,
         microarea TEXT NOT NULL,
         endereco TEXT NOT NULL
       )
     ''');
 
-    // Tabela visitas
+    // ==================== VISITAS ====================
+
     await db.execute('''
       CREATE TABLE visitas(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,42 +86,68 @@ class DatabaseHelper {
         metodo_contraceptivo TEXT,
         caderneta_em_dia INTEGER,
         interesse_vasectomia INTEGER,
-        FOREIGN KEY(paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
+
+        FOREIGN KEY(paciente_id)
+        REFERENCES pacientes(id)
+        ON DELETE CASCADE
       )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_visitas_paciente
+      ON visitas(paciente_id)
     ''');
   }
 
   // ==================== PACIENTES ====================
 
-  Future<int> insertPaciente(Paciente paciente) async {
+  Future<int> insertPaciente(
+    Paciente paciente,
+  ) async {
     final db = await database;
-    return await db.insert('pacientes', paciente.toMap());
+
+    return db.insert(
+      'pacientes',
+      paciente.toMap(),
+    );
   }
 
   Future<List<Paciente>> getAllPacientes() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('pacientes');
-    return List.generate(maps.length, (i) {
-      return Paciente.fromMap(maps[i]);
-    });
+
+    final maps = await db.query(
+      'pacientes',
+    );
+
+    return maps
+        .map((e) => Paciente.fromMap(e))
+        .toList();
   }
 
-  Future<Paciente?> getPacienteById(int id) async {
+  Future<Paciente?> getPacienteById(
+    int id,
+  ) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
+
+    final maps = await db.query(
       'pacientes',
       where: 'id = ?',
       whereArgs: [id],
     );
-    if (maps.isNotEmpty) {
-      return Paciente.fromMap(maps.first);
-    }
-    return null;
+
+    if (maps.isEmpty) return null;
+
+    return Paciente.fromMap(
+      maps.first,
+    );
   }
 
-  Future<int> updatePaciente(Paciente paciente) async {
+  Future<int> updatePaciente(
+    Paciente paciente,
+  ) async {
     final db = await database;
-    return await db.update(
+
+    return db.update(
       'pacientes',
       paciente.toMap(),
       where: 'id = ?',
@@ -99,57 +155,87 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> deletePaciente(int id) async {
+  Future<int> deletePaciente(
+    int id,
+  ) async {
     final db = await database;
-    return await db.delete('pacientes', where: 'id = ?', whereArgs: [id]);
+
+    return db.delete(
+      'pacientes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   // ==================== VISITAS ====================
 
-  Future<int> insertVisita(VisitaDomiciliar visita) async {
+  Future<int> insertVisita(
+    VisitaDomiciliar visita,
+  ) async {
     final db = await database;
-    return await db.insert('visitas', visita.toMap());
+
+    return db.insert(
+      'visitas',
+      visita.toMap(),
+    );
   }
 
   Future<List<VisitaDomiciliar>> getAllVisitas() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('visitas');
-    return List.generate(maps.length, (i) {
-      return VisitaDomiciliar.fromMap(maps[i]);
-    });
+
+    final maps = await db.query(
+      'visitas',
+      orderBy: 'data DESC',
+    );
+
+    return maps
+        .map((e) => VisitaDomiciliar.fromMap(e))
+        .toList();
   }
 
-  Future<List<VisitaDomiciliar>> getVisitasByPaciente(int pacienteId) async {
+  Future<List<VisitaDomiciliar>> getVisitasByPaciente(
+    int pacienteId,
+  ) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
+
+    final maps = await db.query(
       'visitas',
       where: 'paciente_id = ?',
       whereArgs: [pacienteId],
       orderBy: 'data DESC',
     );
-    return List.generate(maps.length, (i) {
-      return VisitaDomiciliar.fromMap(maps[i]);
-    });
+
+    return maps
+        .map((e) => VisitaDomiciliar.fromMap(e))
+        .toList();
   }
 
-  Future<VisitaDomiciliar?> getUltimaVisita(int pacienteId) async {
+  Future<VisitaDomiciliar?> getUltimaVisita(
+    int pacienteId,
+  ) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
+
+    final maps = await db.query(
       'visitas',
       where: 'paciente_id = ?',
       whereArgs: [pacienteId],
       orderBy: 'data DESC',
       limit: 1,
     );
-    if (maps.isNotEmpty) {
-      return VisitaDomiciliar.fromMap(maps.first);
-    }
-    return null;
+
+    if (maps.isEmpty) return null;
+
+    return VisitaDomiciliar.fromMap(
+      maps.first,
+    );
   }
 
-  Future<int> updateVisita(VisitaDomiciliar visita) async {
+  Future<int> updateVisita(
+    VisitaDomiciliar visita,
+  ) async {
     final db = await database;
-    return await db.update(
+
+    return db.update(
       'visitas',
       visita.toMap(),
       where: 'id = ?',
@@ -157,43 +243,53 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> deleteVisita(int id) async {
+  Future<int> deleteVisita(
+    int id,
+  ) async {
     final db = await database;
-    return await db.delete('visitas', where: 'id = ?', whereArgs: [id]);
+
+    return db.delete(
+      'visitas',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   // ==================== RELATÓRIOS ====================
 
   Future<int> getCountDiabeticos() async {
     final db = await database;
+
     final result = await db.rawQuery('''
-      SELECT COUNT(*) as total FROM visitas 
-      WHERE diabetes = 1 
-      GROUP BY paciente_id 
-      ORDER BY data DESC
+      SELECT COUNT(DISTINCT paciente_id) as total
+      FROM visitas
+      WHERE diabetes = 1
     ''');
-    return result.length;
+
+    return Sqflite.firstIntValue(result) ?? 0;
   }
 
   Future<int> getCountHipertensos() async {
     final db = await database;
+
     final result = await db.rawQuery('''
-      SELECT COUNT(*) as total FROM visitas 
-      WHERE hipertensao = 1 
-      GROUP BY paciente_id 
-      ORDER BY data DESC
+      SELECT COUNT(DISTINCT paciente_id) as total
+      FROM visitas
+      WHERE hipertensao = 1
     ''');
-    return result.length;
+
+    return Sqflite.firstIntValue(result) ?? 0;
   }
 
   Future<int> getCountAcamados() async {
     final db = await database;
+
     final result = await db.rawQuery('''
-      SELECT COUNT(*) as total FROM visitas 
-      WHERE acamado = 1 
-      GROUP BY paciente_id 
-      ORDER BY data DESC
+      SELECT COUNT(DISTINCT paciente_id) as total
+      FROM visitas
+      WHERE acamado = 1
     ''');
-    return result.length;
+
+    return Sqflite.firstIntValue(result) ?? 0;
   }
 }
