@@ -14,21 +14,38 @@ class RegistroPA {
   });
 
   String get classificacao {
-    if (sistolica < 120 && diastolica < 80) return 'Normal';
-    if (sistolica >= 120 && sistolica <= 129 && diastolica < 80)
+    if (sistolica < 120 && diastolica < 80) {
+      return 'Normal';
+    }
+
+    if (sistolica >= 120 &&
+        sistolica <= 129 &&
+        diastolica < 80) {
       return 'Elevada';
-    if (sistolica >= 130 && sistolica <= 139 ||
-        diastolica >= 80 && diastolica <= 89) {
-      return 'Hipertensao Estagio 1';
     }
-    if (sistolica >= 140 && sistolica <= 159 ||
-        diastolica >= 90 && diastolica <= 99) {
-      return 'Hipertensao Estagio 2';
+
+    if ((sistolica >= 130 && sistolica <= 139) ||
+        (diastolica >= 80 && diastolica <= 89)) {
+      return 'Hipertensão Estágio 1';
     }
-    return 'Hipertensao Estagio 3 (Crise)';
+
+    if ((sistolica >= 140 && sistolica <= 159) ||
+        (diastolica >= 90 && diastolica <= 99)) {
+      return 'Hipertensão Estágio 2';
+    }
+
+    return 'Hipertensão Estágio 3 (Crise)';
   }
 
-  bool isAlta() => sistolica >= 140 || diastolica >= 90;
+  bool isAlta() {
+    return sistolica >= 140 || diastolica >= 90;
+  }
+
+  bool isValida() {
+    return sistolica > 0 &&
+        diastolica > 0 &&
+        sistolica > diastolica;
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -46,7 +63,7 @@ class RegistroPA {
       visitaId: map['visita_id'],
       sistolica: map['sistolica'],
       diastolica: map['diastolica'],
-      observacoes: map['observacoes'],
+      observacoes: map['observacoes'] ?? '',
     );
   }
 
