@@ -8,9 +8,10 @@ Widget _buildPacienteCard(Paciente paciente) {
     ),
     child: ExpansionTile(
       leading: CircleAvatar(
-        backgroundColor: paciente.isPrioritario()
-            ? Colors.red
-            : Colors.green,
+        backgroundColor:
+            paciente.isPrioritario()
+                ? Colors.red
+                : Colors.green,
         child: Text(
           paciente.nome.isNotEmpty
               ? paciente.nome[0].toUpperCase()
@@ -63,7 +64,8 @@ Widget _buildPacienteCard(Paciente paciente) {
 
               _buildInfoRow(
                 'Sexo',
-                paciente.sexo == 'MASCULINO'
+                paciente.sexo ==
+                        'MASCULINO'
                     ? 'Masculino'
                     : 'Feminino',
               ),
@@ -99,7 +101,9 @@ Widget _buildPacienteCard(Paciente paciente) {
 
                 Container(
                   padding:
-                      const EdgeInsets.all(8),
+                      const EdgeInsets.all(
+                    8,
+                  ),
                   decoration:
                       BoxDecoration(
                     color:
