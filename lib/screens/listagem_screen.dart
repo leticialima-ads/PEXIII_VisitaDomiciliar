@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/paciente.dart';
 import '../providers/paciente_provider.dart';
-import '../utils/date_utils_helper.dart';
+import '../utils/date_utils.dart';
 
 class ListagemScreen extends StatelessWidget {
   const ListagemScreen({super.key});
